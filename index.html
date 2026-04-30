@@ -311,6 +311,7 @@
     if (h >= 0  && h < 6)  return 'night';
     if (h >= 6  && h < 12) return 'morning';
     if (h >= 12 && h < 17) return 'afternoon';
+    if (h>=22) return 'night';
     return 'evening';
   }
 

@@ -1,1680 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>for palkuuuu 🌸</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Nunito:wght@300;400;500;600&family=Caveat:wght@400;500;600&display=swap"
-    rel="stylesheet">
-  <style>
-    :root {
-      --blush: #fde8f0;
-      --petal: #f9cfe4;
-      --peach: #fce4d6;
-      --cream: #fdf8f2;
-      --lavender: #ede8fc;
-      --lilac: #f5e6f8;
-      --rose: #e8a0bc;
-      --mauve: #b5738a;
-      --violet: #a37bc4;
-      --text-dark: #6b4c5e;
-      --text-mid: #9b7189;
-      --text-light: #c4a0b5;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Nunito', sans-serif;
-      background: var(--cream);
-      overflow-x: hidden;
-      cursor: default;
-    }
-
-    /* ── LOCK SCREEN ── */
-    #lock-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 9999;
-      background: linear-gradient(135deg, #fde8f0 0%, #ede8fc 50%, #fce4d6 100%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 28px;
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-
-    #lock-screen.unlocking {
-      opacity: 0;
-      transform: scale(1.08) translateY(-20px);
-      pointer-events: none;
-    }
-
-    .lock-hint {
-      font-family: 'Caveat', cursive;
-      font-size: 22px;
-      color: var(--mauve);
-      opacity: 0;
-      animation: fadeUp 1s ease 0.8s forwards;
-      text-align: center;
-      line-height: 1.5;
-    }
-
-    .lock-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 15px;
-      letter-spacing: 0.15em;
-      color: var(--text-light);
-      text-transform: uppercase;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.3s forwards;
-    }
-
-    .pin-boxes {
-      display: flex;
-      gap: 14px;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.5s forwards;
-    }
-    .photo-placeholder {
-  width: 100%;
-  height: 220px;   /* IMPORTANT */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 12px;
-  background: #f9f3f6;
-}
-
-.photo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-    .pin-box {
-      width: 64px;
-      height: 64px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.7);
-      border: 2px solid var(--petal);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      color: var(--mauve);
-      transition: border-color 0.3s, box-shadow 0.3s;
-      backdrop-filter: blur(4px);
-    }
-
-    .pin-box.filled {
-      border-color: var(--rose);
-      box-shadow: 0 0 16px rgba(232, 160, 188, 0.4);
-    }
-
-    .pin-box.error {
-      border-color: #f09;
-      animation: shake 0.4s ease;
-    }
-
-    .pin-box.success {
-      border-color: #a8e6cf;
-      box-shadow: 0 0 20px rgba(168, 230, 207, 0.5);
-    }
-
-    .pin-keypad {
-      display: grid;
-      grid-template-columns: repeat(3, 64px);
-      gap: 12px;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.7s forwards;
-    }
-
-    .pin-key {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.6);
-      border: 1.5px solid var(--petal);
-      font-family: 'Nunito', sans-serif;
-      font-size: 20px;
-      font-weight: 500;
-      color: var(--text-dark);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .pin-key:active {
-      transform: scale(0.92);
-      background: var(--petal);
-    }
-
-    .pin-key.del {
-      font-size: 16px;
-      color: var(--mauve);
-    }
-
-    .lock-wrong {
-      font-family: 'Caveat', cursive;
-      font-size: 16px;
-      color: #c0507a;
-      height: 20px;
-      text-align: center;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .lock-wrong.show {
-      opacity: 1;
-    }
-
-    /* ── FLOATING PARTICLES ── */
-    .particles {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-
-    .particle {
-      position: absolute;
-      border-radius: 50%;
-      animation: floatUp linear infinite;
-      opacity: 0;
-    }
-
-    /* ── MAIN SITE ── */
-    #main-site {
-      display: none;
-    }
-
-    #main-site.visible {
-      display: block;
-    }
-
-    section {
-      min-height: 100vh;
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 40px;
-      overflow: hidden;
-    }
-
-    /* ── SECTION 1: HERO ── */
-    #hero {
-      background: linear-gradient(160deg, #fde8f0 0%, #f5e6f8 40%, #ede8fc 70%, #fce4d6 100%);
-    }
-
-    .hero-greeting {
-      font-family: 'Caveat', cursive;
-      font-size: 22px;
-      color: var(--mauve);
-      letter-spacing: 0.05em;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.3s forwards;
-      margin-bottom: 8px;
-    }
-
-    .hero-name {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(56px, 8vw, 88px);
-      color: var(--text-dark);
-      line-height: 1.1;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.6s forwards;
-      text-align: center;
-    }
-
-    .hero-name span {
-      color: var(--mauve);
-      font-style: italic;
-    }
-
-    .hero-sub {
-      font-family: 'Caveat', cursive;
-      font-size: 20px;
-      color: var(--text-mid);
-      margin-top: 16px;
-      opacity: 0;
-      animation: fadeUp 1s ease 0.9s forwards;
-      text-align: center;
-    }
-
-    .hero-date {
-      font-family: 'Nunito', sans-serif;
-      font-size: 13px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--text-light);
-      margin-top: 8px;
-      opacity: 0;
-      animation: fadeUp 1s ease 1.1s forwards;
-    }
-
-    .hero-btn {
-      margin-top: 40px;
-      padding: 16px 48px;
-      border-radius: 99px;
-      background: linear-gradient(135deg, var(--petal), var(--lavender));
-      border: none;
-      cursor: pointer;
-      font-family: 'Caveat', cursive;
-      font-size: 22px;
-      color: var(--text-dark);
-      letter-spacing: 0.05em;
-      box-shadow: 0 8px 32px rgba(181, 115, 138, 0.2);
-      transition: all 0.3s ease;
-      opacity: 0;
-      animation: fadeUp 1s ease 1.4s forwards, btnBounce 0.5s ease 2.5s;
-    }
-
-    .hero-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(181, 115, 138, 0.3);
-    }
-
-    .floating-hearts {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .fheart {
-      position: absolute;
-      font-size: 18px;
-      opacity: 0.15;
-      animation: floatHeart linear infinite;
-    }
-
-    /* ── SECTION 2: BIRTHDAY ── */
-    #birthday {
-      background: linear-gradient(180deg, #fdf8f2 0%, #fde8f0 100%);
-      text-align: center;
-    }
-
-    .bday-top {
-      font-family: 'Caveat', cursive;
-      font-size: 20px;
-      color: var(--text-light);
-      letter-spacing: 0.1em;
-      margin-bottom: 16px;
-    }
-
-    .bday-main {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(48px, 7vw, 80px);
-      color: var(--text-dark);
-      line-height: 1.15;
-      text-align: center;
-    }
-
-    .bday-main .highlight {
-      color: var(--mauve);
-      font-style: italic;
-    }
-
-    .bday-date-pill {
-      margin-top: 24px;
-      display: inline-block;
-      padding: 10px 32px;
-      border-radius: 99px;
-      background: rgba(253, 232, 240, 0.8);
-      border: 1.5px solid var(--petal);
-      font-family: 'Caveat', cursive;
-      font-size: 20px;
-      color: var(--mauve);
-      backdrop-filter: blur(4px);
-    }
-
-    .bday-note {
-      margin-top: 32px;
-      font-family: 'Caveat', cursive;
-      font-size: 18px;
-      color: var(--text-mid);
-      max-width: 500px;
-      line-height: 1.7;
-    }
-
-    .balloons {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 200px;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .balloon {
-      position: absolute;
-      bottom: -20px;
-      font-size: 40px;
-      animation: floatBalloon ease-in-out infinite;
-    }
-
-    /* ── SECTION 3: SCRAPBOOK ── */
-    #scrapbook {
-      background: linear-gradient(160deg, #fdf8f2, #f5e6f8);
-      padding: 80px 40px;
-      min-height: auto;
-    }
-
-    .scrap-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 42px;
-      color: var(--text-dark);
-      text-align: center;
-      margin-bottom: 8px;
-    }
-
-    .scrap-sub {
-      font-family: 'Caveat', cursive;
-      font-size: 18px;
-      color: var(--text-mid);
-      text-align: center;
-      margin-bottom: 60px;
-    }
-
-    .scrapbook-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
-      max-width: 900px;
-      width: 100%;
-      position: relative;
-    }
-
-    .polaroid {
-      background: white;
-      padding: 12px 12px 40px;
-      box-shadow: 4px 6px 24px rgba(181, 115, 138, 0.15);
-      position: relative;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .polaroid:hover {
-      box-shadow: 8px 12px 40px rgba(181, 115, 138, 0.25);
-    }
-
-    .polaroid:nth-child(1) {
-      transform: rotate(-2deg);
-    }
-
-    .polaroid:nth-child(2) {
-      transform: rotate(1.5deg);
-      margin-top: 24px;
-    }
-    .photo-img {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 10px;
-}
-    .polaroid:nth-child(3) {
-      transform: rotate(-1deg);
-    }
-
-    .polaroid:nth-child(4) {
-      transform: rotate(2deg);
-      margin-top: -16px;
-    }
-
-    .polaroid:nth-child(5) {
-      transform: rotate(-1.5deg);
-    }
-
-    .polaroid:nth-child(6) {
-      transform: rotate(1deg);
-      margin-top: 20px;
-    }
-
-    .polaroid:nth-child(7) {
-      transform: rotate(-2.5deg);
-    }
-
-    .polaroid:nth-child(8) {
-      transform: rotate(0.5deg);
-      margin-top: -12px;
-      grid-column: 2;
-    }
-
-    .polaroid:hover {
-      transform: rotate(0deg) scale(1.04) !important;
-      z-index: 10;
-    }
-
-    .photo-placeholder {
-      width: 100%;
-      aspect-ratio: 1;
-      background: linear-gradient(135deg, var(--blush), var(--lavender));
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .photo-placeholder img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: none;
-    }
-
-    .photo-placeholder img.loaded {
-      display: block;
-    }
-
-    .photo-placeholder .photo-icon {
-      font-size: 32px;
-      opacity: 0.4;
-    }
-
-    .photo-placeholder .photo-label {
-      font-family: 'Caveat', cursive;
-      font-size: 13px;
-      color: var(--mauve);
-      opacity: 0.7;
-      text-align: center;
-      padding: 0 8px;
-    }
-
-    .photo-input-btn {
-      position: absolute;
-      bottom: 6px;
-      right: 6px;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid var(--petal);
-      font-size: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-      z-index: 5;
-    }
-
-    .photo-input-btn:hover {
-      background: var(--petal);
-    }
-
-    .polaroid-caption {
-      padding-top: 10px;
-      text-align: center;
-      font-family: 'Caveat', cursive;
-      font-size: 16px;
-      color: var(--text-dark);
-      line-height: 1.4;
-    }
-
-    .tape {
-      position: absolute;
-      width: 60px;
-      height: 22px;
-      background: repeating-linear-gradient(45deg,
-          rgba(253, 232, 240, 0.7) 0px, rgba(253, 232, 240, 0.7) 4px,
-          rgba(237, 232, 252, 0.7) 4px, rgba(237, 232, 252, 0.7) 8px);
-      border-radius: 3px;
-      opacity: 0.9;
-    }
-
-    .tape-top {
-      top: -11px;
-      left: 50%;
-      transform: translateX(-50%) rotate(-2deg);
-    }
-
-    .tape-tl {
-      top: -10px;
-      left: 10px;
-      transform: rotate(-5deg);
-    }
-
-    .tape-tr {
-      top: -10px;
-      right: 10px;
-      transform: rotate(5deg);
-    }
-
-    /* ── SECTION 4: BOUQUET ── */
-    #bouquet {
-      background: linear-gradient(180deg, #f5e6f8 0%, #fde8f0 60%, #fdf8f2 100%);
-      text-align: center;
-    }
-
-    .bouquet-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 42px;
-      color: var(--text-dark);
-      margin-bottom: 8px;
-    }
-
-    .bouquet-sub {
-      font-family: 'Caveat', cursive;
-      font-size: 18px;
-      color: var(--text-mid);
-      margin-bottom: 50px;
-    }
-
-    .bouquet-wrap {
-      position: relative;
-      width: 520px;
-      height: 460px;
-      max-width: 100%;
-    }
-
-    .flower {
-      position: absolute;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .flower:hover {
-      transform: scale(1.15);
-    }
-
-    .flower.bloomed {
-      transform: scale(1.2);
-    }
-
-    .flower svg {
-      display: block;
-    }
-
-    .flower-msg {
-      position: absolute;
-      background: white;
-      border: 1.5px solid var(--petal);
-      border-radius: 14px;
-      padding: 10px 16px;
-      font-family: 'Caveat', cursive;
-      font-size: 15px;
-      color: var(--text-dark);
-      white-space: nowrap;
-      box-shadow: 0 4px 20px rgba(181, 115, 138, 0.15);
-      pointer-events: none;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: all 0.4s ease;
-      z-index: 20;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%) translateY(8px);
-    }
-
-    .flower.bloomed .flower-msg {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* ── SECTION 5: MUSIC ── */
-    #music {
-      background: linear-gradient(160deg, #fdf8f2, #ede8fc);
-      text-align: center;
-    }
-
-    .music-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 42px;
-      color: var(--text-dark);
-      margin-bottom: 8px;
-    }
-
-    .music-sub {
-      font-family: 'Caveat', cursive;
-      font-size: 20px;
-      color: var(--mauve);
-      margin-bottom: 50px;
-    }
-
-    .music-cards {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-      max-width: 700px;
-      width: 100%;
-    }
-
-    .music-card {
-      background: rgba(255, 255, 255, 0.8);
-      border: 1.5px solid var(--petal);
-      border-radius: 20px;
-      padding: 20px 24px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      backdrop-filter: blur(8px);
-      transition: all 0.3s ease;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .music-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 32px rgba(181, 115, 138, 0.2);
-      border-color: var(--rose);
-    }
-
-    .music-card.playing {
-      border-color: var(--violet);
-      background: rgba(237, 232, 252, 0.5);
-    }
-
-    .music-card-art {
-      width: 56px;
-      height: 56px;
-      border-radius: 12px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-    }
-
-    .music-card-info {
-      flex: 1;
-      text-align: left;
-    }
-
-    .music-card-title {
-      font-family: 'Nunito', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-dark);
-      margin-bottom: 2px;
-    }
-
-    .music-card-artist {
-      font-family: 'Caveat', cursive;
-      font-size: 14px;
-      color: var(--text-mid);
-    }
-
-    .music-card-note {
-      font-size: 11px;
-      color: var(--text-light);
-      margin-top: 4px;
-      font-family: 'Nunito', sans-serif;
-      font-style: italic;
-    }
-
-    .music-play-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: var(--petal);
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      flex-shrink: 0;
-      transition: all 0.2s;
-    }
-
-    .music-play-btn:hover {
-      background: var(--rose);
-    }
-
-    .music-card.playing .music-play-btn {
-      background: var(--violet);
-    }
-
-    .music-upload-hint {
-      margin-top: 20px;
-      font-family: 'Caveat', cursive;
-      font-size: 15px;
-      color: var(--text-light);
-    }
-
-    .audio-player {
-      display: none;
-    }
-
-    /* 🎧 Playlist Layout */
-
-    .playlist-card {
-      width: 100%;
-      max-width: 420px;
-      margin: 0 auto;
-      background: rgba(255, 255, 255, 0.75);
-      border-radius: 24px;
-      padding: 18px;
-      backdrop-filter: blur(10px);
-      border: 1.5px solid var(--petal);
-      box-shadow: 0 10px 40px rgba(181, 115, 138, 0.15);
-      transition: all 0.3s ease;
-    }
-
-    .playlist-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 14px 50px rgba(181, 115, 138, 0.25);
-    }
-
-    /* Spotify iframe styling */
-    .playlist-card iframe {
-      border-radius: 16px;
-    }
-
-    /* Mobile spacing */
-    @media (max-width: 600px) {
-      .playlist-card {
-        padding: 14px;
-      }
-    }
-
-    /* ── SECTION 6: FINAL ── */
-    #final {
-      background: linear-gradient(160deg, #ede8fc 0%, #fde8f0 50%, #fce4d6 100%);
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .final-lines {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .final-line {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(28px, 4vw, 44px);
-      color: var(--text-dark);
-      opacity: 0;
-      transform: translateY(16px);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-    }
-
-    .final-line.italic {
-      font-style: italic;
-      color: var(--mauve);
-    }
-
-    .final-line.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .final-heart {
-      font-size: 40px;
-      margin-top: 32px;
-      opacity: 0;
-      transition: opacity 0.5s ease 0.3s;
-      animation: heartBeat 1.5s ease infinite;
-    }
-
-    .final-heart.visible {
-      opacity: 1;
-    }
-
-    .confetti-piece {
-      position: absolute;
-      border-radius: 3px;
-      pointer-events: none;
-      opacity: 0;
-      animation: confettiFall ease-out forwards;
-    }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @keyframes shake {
-
-      0%,
-      100% {
-        transform: translateX(0);
-      }
-
-      20% {
-        transform: translateX(-6px);
-      }
-
-      40% {
-        transform: translateX(6px);
-      }
-
-      60% {
-        transform: translateX(-4px);
-      }
-
-      80% {
-        transform: translateX(4px);
-      }
-    }
-
-    @keyframes btnBounce {
-
-      0%,
-      100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-8px);
-      }
-    }
-
-    @keyframes floatHeart {
-      0% {
-        transform: translateY(0) rotate(0deg);
-        opacity: 0.15;
-      }
-
-      50% {
-        opacity: 0.25;
-      }
-
-      100% {
-        transform: translateY(-120vh) rotate(20deg);
-        opacity: 0;
-      }
-    }
-
-    @keyframes floatBalloon {
-
-      0%,
-      100% {
-        transform: translateY(0) rotate(-3deg);
-      }
-
-      50% {
-        transform: translateY(-18px) rotate(3deg);
-      }
-    }
-
-    @keyframes floatUp {
-      0% {
-        transform: translateY(0);
-        opacity: 0;
-      }
-
-      10% {
-        opacity: 1;
-      }
-
-      90% {
-        opacity: 0.6;
-      }
-
-      100% {
-        transform: translateY(-100vh);
-        opacity: 0;
-      }
-    }
-
-    @keyframes heartBeat {
-
-      0%,
-      100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.12);
-      }
-    }
-
-    @keyframes confettiFall {
-      0% {
-        opacity: 1;
-        transform: translateY(0) rotate(0deg);
-      }
-
-      100% {
-        opacity: 0;
-        transform: translateY(200px) rotate(360deg);
-      }
-    }
-
-    @keyframes bobFlower {
-
-      0%,
-      100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-8px);
-      }
-    }
-
-    /* ── SCROLL REVEAL ── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal.in-view {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* ── NAV DOTS ── */
-    .nav-dots {
-      position: fixed;
-      right: 24px;
-      top: 50%;
-      transform: translateY(-50%);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 100;
-    }
-
-    .nav-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--petal);
-      border: 1.5px solid var(--rose);
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-
-    .nav-dot.active {
-      background: var(--mauve);
-      transform: scale(1.3);
-    }
-    /* 🌸 MEMORY SCRAPBOOK */
-
-.memory-section {
-  padding: 80px 20px;
-  background: linear-gradient(180deg, #fff7f3, #f8f2ff);
-  text-align: center;
-}
-
-.memory-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 42px;
-  color: #6b4b5c;
-}
-
-.memory-sub {
-  font-family: 'Caveat', cursive;
-  font-size: 20px;
-  color: #a67c8b;
-  margin-bottom: 50px;
-}
-
-.memory-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 28px;
-  max-width: 950px;
-  margin: auto;
-}
-
-/* Card */
-.memory-card {
-  background: rgba(255,255,255,0.9);
-  padding: 14px;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-  transform: rotate(-2deg);
-  transition: 0.3s ease;
-  position: relative;
-}
-
-.memory-card:hover {
-  transform: rotate(0deg) scale(1.05);
-}
-
-/* Tape */
-.memory-tape {
-  width: 42px;
-  height: 14px;
-  background: #ffdbe6;
-  position: absolute;
-  top: -8px;
-  left: 20px;
-  transform: rotate(-10deg);
-  border-radius: 4px;
-}
-
-/* Image */
-.memory-img-box {
-  width: 100%;
-  height: 220px;
-  overflow: hidden;
-  border-radius: 12px;
-}
-
-.memory-img-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-/* Caption */
-.memory-text {
-  font-family: 'Caveat', cursive;
-  font-size: 16px;
-  margin-top: 10px;
-  color: #7a5c6d;
-}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>a little moment</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Nunito:wght@300;400;500&family=Caveat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blush:    #fde8f0;
+    --petal:    #f9cfe4;
+    --peach:    #fce4d6;
+    --cream:    #fdf8f2;
+    --lavender: #ede8fc;
+    --lilac:    #f5e6f8;
+    --rose:     #e8a0bc;
+    --mauve:    #b5738a;
+    --violet:   #a37bc4;
+    --text:     #6b4c5e;
+    --text-mid: #9b7189;
+    --text-dim: #c4a0b5;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(145deg, #fde8f0 0%, #f5e6f8 35%, #ede8fc 65%, #fce4d6 100%);
+    font-family: 'Nunito', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+
+  /* ── FLOATING PETALS ── */
+  .petal-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .fp {
+    position: absolute;
+    font-size: 16px;
+    opacity: 0;
+    animation: floatPetal linear infinite;
+  }
+  @keyframes floatPetal {
+    0%   { transform: translateY(0) rotate(0deg)   scale(1);   opacity: 0; }
+    8%   { opacity: 0.22; }
+    92%  { opacity: 0.15; }
+    100% { transform: translateY(-105vh) rotate(40deg) scale(0.8); opacity: 0; }
+  }
+
+  /* ── SOFT BLOBS ── */
+  .blob {
+    position: fixed; border-radius: 50%;
+    filter: blur(72px); pointer-events: none; z-index: 0;
+    animation: blobPulse ease-in-out infinite;
+  }
+  @keyframes blobPulse {
+    0%,100% { transform: scale(1) translate(0,0); opacity: 0.55; }
+    50%      { transform: scale(1.08) translate(8px,-8px); opacity: 0.7; }
+  }
+
+  /* ── CARD ── */
+  .card {
+    position: relative; z-index: 10;
+    text-align: center;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0;
+    padding: 0 20px;
+    animation: fadeUp 1.4s ease forwards;
+    opacity: 0;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* greeting */
+  .greeting {
+    font-family: 'Caveat', cursive;
+    font-size: 20px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    margin-bottom: 28px;
+    animation: fadeUp 1.4s ease 0.2s both;
+  }
+
+  /* time */
+  .time-wrap {
+    display: flex; align-items: baseline; gap: 6px;
+    animation: fadeUp 1.4s ease 0.4s both;
+    margin-bottom: 10px;
+  }
+
+  .time-main {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(80px, 16vw, 148px);
+    font-weight: 400;
+    color: var(--text);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .time-main .colon {
+    animation: blinkColon 1s step-end infinite;
+    display: inline-block; margin: 0 2px;
+  }
+  @keyframes blinkColon {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.2; }
+  }
+
+  .time-seconds {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 400; font-style: italic;
+    color: var(--text-dim);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .ampm {
+    font-family: 'Nunito', sans-serif;
+    font-size: clamp(14px, 2.5vw, 20px);
+    font-weight: 300;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    align-self: flex-end;
+    padding-bottom: 12px;
+  }
+
+  /* divider */
+  .divider {
+    width: 80px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--rose), transparent);
+    margin: 24px auto;
+    animation: fadeUp 1.4s ease 0.6s both;
+  }
+
+  /* date */
+  .date-wrap {
+    animation: fadeUp 1.4s ease 0.8s both;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+
+  .day-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    font-style: italic;
+    color: var(--text);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+  }
+
+  .full-date {
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px; font-weight: 300;
+    letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--text-mid);
+  }
+
+  /* bottom note */
+  .bottom-note {
+    margin-top: 52px;
+    font-family: 'Caveat', cursive;
+    font-size: 17px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    animation: fadeUp 1.4s ease 1.2s both;
+  }
+
+  /* little hearts row */
+  .hearts-row {
+    margin-top: 18px;
+    display: flex; gap: 10px; align-items: center;
+    animation: fadeUp 1.4s ease 1.5s both;
+  }
+  .h-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--petal);
+    animation: hDotPulse ease-in-out infinite;
+  }
+  .h-dot:nth-child(1) { animation-delay: 0s;    background: var(--petal); }
+  .h-dot:nth-child(2) { animation-delay: 0.3s;  background: var(--rose);  width:9px;height:9px; }
+  .h-dot:nth-child(3) { animation-delay: 0.6s;  background: var(--lavender); }
+  .h-dot:nth-child(4) { animation-delay: 0.9s;  background: var(--peach); }
+  .h-dot:nth-child(5) { animation-delay: 1.2s;  background: var(--petal); }
+
+  @keyframes hDotPulse {
+    0%,100% { transform: scale(1);   opacity: 0.6; }
+    50%      { transform: scale(1.5); opacity: 1;   }
+  }
+
+  /* season pill */
+  .season-pill {
+    margin-top: 32px;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 22px; border-radius: 99px;
+    background: rgba(255,255,255,0.55);
+    border: 1px solid rgba(232,160,188,0.35);
+    backdrop-filter: blur(8px);
+    font-family: 'Caveat', cursive;
+    font-size: 16px; color: var(--mauve);
+    letter-spacing: 0.05em;
+    animation: fadeUp 1.4s ease 1.8s both;
+    box-shadow: 0 4px 20px rgba(181,115,138,0.1);
+  }
+  .season-dot { font-size: 14px; }
+</style>
 </head>
-
 <body>
 
-  <!-- LOCK SCREEN -->
-  <div id="lock-screen">
-    <p class="lock-title">something just for you</p>
-    <p class="lock-hint">hi… enter the code to open this 🌸</p>
-    <div class="pin-boxes" id="pin-boxes">
-      <div class="pin-box" id="b0"></div>
-      <div class="pin-box" id="b1"></div>
-      <div class="pin-box" id="b2"></div>
-      <div class="pin-box" id="b3"></div>
+<!-- Blobs -->
+<div class="blob" style="width:420px;height:420px;background:#fde8f0;top:-80px;left:-80px;animation-duration:7s;"></div>
+<div class="blob" style="width:360px;height:360px;background:#ede8fc;bottom:-60px;right:-60px;animation-duration:9s;animation-delay:2s;"></div>
+<div class="blob" style="width:280px;height:280px;background:#fce4d6;bottom:20%;left:5%;animation-duration:11s;animation-delay:4s;"></div>
+<div class="blob" style="width:200px;height:200px;background:#f9cfe4;top:15%;right:8%;animation-duration:8s;animation-delay:1s;"></div>
+
+<!-- Floating petals -->
+<div class="petal-layer" id="petals"></div>
+
+<!-- Card -->
+<div class="card">
+  <div class="greeting" id="greeting">good morning :)</div>
+
+  <div class="time-wrap">
+    <div class="ampm" id="ampm">AM</div>
+    <div class="time-main">
+      <span id="hh">--</span><span class="colon">:</span><span id="mm">--</span>
     </div>
-    <div class="lock-wrong" id="lock-wrong">that's not it… try again 🌷</div>
-    <div class="pin-keypad">
-      <button class="pin-key" onclick="pinInput('1')">1</button>
-      <button class="pin-key" onclick="pinInput('2')">2</button>
-      <button class="pin-key" onclick="pinInput('3')">3</button>
-      <button class="pin-key" onclick="pinInput('4')">4</button>
-      <button class="pin-key" onclick="pinInput('5')">5</button>
-      <button class="pin-key" onclick="pinInput('6')">6</button>
-      <button class="pin-key" onclick="pinInput('7')">7</button>
-      <button class="pin-key" onclick="pinInput('8')">8</button>
-      <button class="pin-key" onclick="pinInput('9')">9</button>
-      <button class="pin-key" onclick="pinInput('')"></button>
-      <button class="pin-key" onclick="pinInput('0')">0</button>
-      <button class="pin-key del" onclick="pinDelete()">⌫</button>
-    </div>
+    <div class="time-seconds" id="ss">00</div>
   </div>
 
-  <!-- FLOATING PARTICLES (bg) -->
-  <div class="particles" id="particles"></div>
+  <div class="divider"></div>
 
-  <!-- MAIN SITE -->
-  <div id="main-site">
-
-    <!-- NAV DOTS -->
-    <nav class="nav-dots" id="nav-dots">
-      <div class="nav-dot active" onclick="scrollTo(0)"></div>
-      <div class="nav-dot" onclick="scrollToSection('birthday')"></div>
-      <div class="nav-dot" onclick="scrollToSection('scrapbook')"></div>
-      <div class="nav-dot" onclick="scrollToSection('bouquet')"></div>
-      <div class="nav-dot" onclick="scrollToSection('music')"></div>
-      <div class="nav-dot" onclick="scrollToSection('final')"></div>
-    </nav>
-
-    <!-- HERO -->
-    <section id="hero">
-      <div class="floating-hearts" id="floating-hearts"></div>
-      <p class="hero-greeting">hey you,</p>
-      <h1 class="hero-name">happy birthday,<br><span>Palkuuuu</span> 🌸</h1>
-      <p class="hero-sub">don't rush. just enjoy this :)</p>
-      <p class="hero-date">April 29th · made just for you</p>
-      <button class="hero-btn" onclick="scrollToSection('birthday')">start 💌</button>
-    </section>
-
-    <!-- BIRTHDAY -->
-    <section id="birthday">
-      <div class="balloons">
-        <div class="balloon" style="left:8%;animation-duration:4s;animation-delay:0s;">🎈</div>
-        <div class="balloon" style="left:22%;animation-duration:5s;animation-delay:0.5s;">🎀</div>
-        <div class="balloon" style="left:75%;animation-duration:4.5s;animation-delay:1s;">🎈</div>
-        <div class="balloon" style="left:88%;animation-duration:3.8s;animation-delay:0.3s;">🎊</div>
-      </div>
-
-      <p class="bday-top reveal">it is finally here —</p>
-      <h2 class="bday-main reveal" style="transition-delay:0.15s;">
-        it's your<br><span class="highlight">day, Palak</span> 🎂
-      </h2>
-      <div class="bday-date-pill reveal" style="transition-delay:0.3s;">April 29th ✨</div>
-      <p class="bday-note reveal" style="transition-delay:0.45s; max-width:520px; text-align:center;">
-        you deserve a whole day that feels as warm as you make everything feel.<br>
-        so here's something i made just for you 🌷
-      </p>
-    </section>
-
-    <!-- SCRAPBOOK -->
-<!-- SCRAPBOOK NEW -->
-<section class="memory-section">
-
-  <h2 class="memory-title">a little scrapbook</h2>
-  <p class="memory-sub">some moments i didn't forget :)</p>
-
-  <div class="memory-grid">
-
-    <!-- Card 1 -->
-    <div class="memory-card">
-      <div class="memory-tape"></div>
-      <div class="memory-img-box">
-        <img src="https://ik.imagekit.io/pcbkagf94/images/photo1.jpg">
-      </div>
-      <p class="memory-text">you remember this? :)</p>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="memory-card">
-      <div class="memory-tape"></div>
-      <div class="memory-img-box">
-        <img src="https://ik.imagekit.io/pcbkagf94/images/photo2.gif">
-      </div>
-      <p class="memory-text">that 3am moment 🥹</p>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="memory-card">
-      <div class="memory-tape"></div>
-      <div class="memory-img-box">
-        <img src="https://ik.imagekit.io/pcbkagf94/images/photo3.jpg">
-      </div>
-      <p class="memory-text">i didn't forget this one</p>
-    </div>
-
-    <!-- Card 4 -->
-    <div class="memory-card">
-      <div class="memory-tape"></div>
-      <div class="memory-img-box">
-        <img src="https://ik.imagekit.io/pcbkagf94/images/photo4.jpeg">
-      </div>
-      <p class="memory-text">always there 🌸</p>
-    </div>
-
-    <!-- Card 5 -->
-    <div class="memory-card">
-      <div class="memory-tape"></div>
-      <div class="memory-img-box">
-        <img src="https://ik.imagekit.io/pcbkagf94/images/photo5.jpeg">
-      </div>
-      <p class="memory-text">this makes me smile</p>
-    </div>
-
-    <!-- Card 6 -->
-    <div class="memory-card">
-      <div class="memory-tape"></div>
-      <div class="memory-img-box">
-        <img src="https://ik.imagekit.io/pcbkagf94/images/photo6.jpeg">
-      </div>
-      <p class="memory-text">small things matter</p>
-    </div>
-
-    <!-- Card 7 -->
-    <div class="memory-card">
-      <div class="memory-tape"></div>
-      <div class="memory-img-box">
-        <img src="https://ik.imagekit.io/pcbkagf94/images/photo7.jpg">
-      </div>
-      <p class="memory-text">you never stopped caring 🌷</p>
-    </div>
-
-    <!-- Card 8 -->
-    <div class="memory-card">
-      <div class="memory-tape"></div>
-      <div class="memory-img-box">
-        <img src="https://ik.imagekit.io/pcbkagf94/images/photo8.jpg">
-      </div>
-      <p class="memory-text">saving the best for last 💖</p>
-    </div>
-
+  <div class="date-wrap">
+    <div class="day-name" id="dayname">---</div>
+    <div class="full-date" id="fulldate">--- · -- · ----</div>
   </div>
 
-</section>
-  <p style="margin-top:40px;font-family:'Caveat';font-size:15px;color:var(--text-light);">
-    you're cute
-  </p>
-</section>
-    <!-- BOUQUET -->
-    <section id="bouquet">
-      <h2 class="bouquet-title reveal">a bouquet, for you</h2>
-      <p class="bouquet-sub reveal" style="transition-delay:0.1s;">tap each flower 🌸</p>
+  <div class="hearts-row">
+    <div class="h-dot"></div>
+    <div class="h-dot"></div>
+    <div class="h-dot"></div>
+    <div class="h-dot"></div>
+    <div class="h-dot"></div>
+  </div>
 
-      <div class="bouquet-wrap reveal" style="transition-delay:0.2s;" id="bouquet-svg-wrap">
-        <!-- Bouquet SVG -->
-        <svg viewBox="0 0 520 460" width="520" height="460" style="max-width:100%;" xmlns="http://www.w3.org/2000/svg">
-          <!-- Stems -->
-          <path d="M260 420 Q255 380 240 340 Q225 300 220 260" stroke="#b5c9a0" stroke-width="2.5" fill="none"
-            stroke-linecap="round" />
-          <path d="M260 420 Q262 375 265 335 Q268 290 270 250" stroke="#b5c9a0" stroke-width="2.5" fill="none"
-            stroke-linecap="round" />
-          <path d="M260 420 Q270 375 285 335 Q300 295 310 255" stroke="#b5c9a0" stroke-width="2.5" fill="none"
-            stroke-linecap="round" />
-          <path d="M260 420 Q245 370 225 325 Q205 280 195 240" stroke="#b5c9a0" stroke-width="2.5" fill="none"
-            stroke-linecap="round" />
-          <path d="M260 420 Q255 368 248 318 Q240 268 235 225" stroke="#b5c9a0" stroke-width="2.5" fill="none"
-            stroke-linecap="round" />
-          <path d="M260 420 Q268 368 278 318 Q288 268 292 220" stroke="#b5c9a0" stroke-width="2.5" fill="none"
-            stroke-linecap="round" />
-          <!-- Bow -->
-          <ellipse cx="260" cy="428" rx="28" ry="10" fill="#f9cfe4" opacity="0.7" />
-          <path d="M232 428 Q215 410 228 405 Q241 400 248 420" fill="#fde8f0" opacity="0.8" />
-          <path d="M288 428 Q305 410 292 405 Q279 400 272 420" fill="#fde8f0" opacity="0.8" />
-          <!-- Leaves -->
-          <ellipse cx="230" cy="355" rx="12" ry="7" fill="#c5d9a8" opacity="0.7" transform="rotate(-30 230 355)" />
-          <ellipse cx="285" cy="345" rx="12" ry="7" fill="#c5d9a8" opacity="0.7" transform="rotate(25 285 345)" />
-        </svg>
-        <!-- Flowers placed over SVG -->
-      </div>
+  <div class="bottom-note" id="bottom-note">take it slow today 🌸</div>
 
-      <!-- Flowers as HTML for interactivity -->
-      <div style="position:relative; width:520px; max-width:100%; height:460px; margin-top:-460px;">
+  <div class="season-pill">
+    <span class="season-dot" id="season-emoji">🌸</span>
+    <span id="season-text">spring</span>
+  </div>
+</div>
 
-        <div class="flower" id="f1" style="left:195px;top:200px;animation:bobFlower 3.2s ease-in-out infinite;"
-          onclick="bloomFlower(1)">
-          <svg width="60" height="60" viewBox="0 0 60 60">
-            <g transform="translate(30,30)">
-              <ellipse rx="10" ry="18" fill="#fde8f0" transform="rotate(0)" />
-              <ellipse rx="10" ry="18" fill="#f9cfe4" transform="rotate(60)" />
-              <ellipse rx="10" ry="18" fill="#fde8f0" transform="rotate(120)" />
-              <ellipse rx="10" ry="18" fill="#f9cfe4" transform="rotate(180)" />
-              <ellipse rx="10" ry="18" fill="#fde8f0" transform="rotate(240)" />
-              <ellipse rx="10" ry="18" fill="#f9cfe4" transform="rotate(300)" />
-              <circle r="9" fill="#fce4d6" />
-              <circle r="5" fill="#f9b8ce" />
-            </g>
-          </svg>
-          <div class="flower-msg">you're so incredibly kind 🌸</div>
-        </div>
-
-        <div class="flower" id="f2"
-          style="left:218px;top:170px;animation:bobFlower 2.8s ease-in-out infinite;animation-delay:0.4s;"
-          onclick="bloomFlower(2)">
-          <svg width="56" height="56" viewBox="0 0 60 60">
-            <g transform="translate(30,30)">
-              <ellipse rx="9" ry="16" fill="#ede8fc" transform="rotate(0)" />
-              <ellipse rx="9" ry="16" fill="#e0d8f8" transform="rotate(72)" />
-              <ellipse rx="9" ry="16" fill="#ede8fc" transform="rotate(144)" />
-              <ellipse rx="9" ry="16" fill="#e0d8f8" transform="rotate(216)" />
-              <ellipse rx="9" ry="16" fill="#ede8fc" transform="rotate(288)" />
-              <circle r="8" fill="#fdf0e0" />
-              <circle r="4" fill="#f5d9a8" />
-            </g>
-          </svg>
-          <div class="flower-msg">always thinking of others 💜</div>
-        </div>
-
-        <div class="flower" id="f3"
-          style="left:250px;top:150px;animation:bobFlower 3.5s ease-in-out infinite;animation-delay:0.8s;"
-          onclick="bloomFlower(3)">
-          <svg width="64" height="64" viewBox="0 0 60 60">
-            <g transform="translate(30,30)">
-              <ellipse rx="10" ry="17" fill="#fce4d6" transform="rotate(0)" />
-              <ellipse rx="10" ry="17" fill="#fdd5c0" transform="rotate(45)" />
-              <ellipse rx="10" ry="17" fill="#fce4d6" transform="rotate(90)" />
-              <ellipse rx="10" ry="17" fill="#fdd5c0" transform="rotate(135)" />
-              <ellipse rx="10" ry="17" fill="#fce4d6" transform="rotate(180)" />
-              <ellipse rx="10" ry="17" fill="#fdd5c0" transform="rotate(225)" />
-              <ellipse rx="10" ry="17" fill="#fce4d6" transform="rotate(270)" />
-              <ellipse rx="10" ry="17" fill="#fdd5c0" transform="rotate(315)" />
-              <circle r="8" fill="#fff0e8" />
-              <circle r="4" fill="#f9b8a0" />
-            </g>
-          </svg>
-          <div class="flower-msg">you're hardworking🌟 don't listen to world's noise</div>
-        </div>
-
-        <div class="flower" id="f4"
-          style="left:285px;top:163px;animation:bobFlower 3.1s ease-in-out infinite;animation-delay:1.2s;"
-          onclick="bloomFlower(4)">
-          <svg width="56" height="56" viewBox="0 0 60 60">
-            <g transform="translate(30,30)">
-              <ellipse rx="9" ry="16" fill="#f5e6f8" transform="rotate(0)" />
-              <ellipse rx="9" ry="16" fill="#edd8f5" transform="rotate(60)" />
-              <ellipse rx="9" ry="16" fill="#f5e6f8" transform="rotate(120)" />
-              <ellipse rx="9" ry="16" fill="#edd8f5" transform="rotate(180)" />
-              <ellipse rx="9" ry="16" fill="#f5e6f8" transform="rotate(240)" />
-              <ellipse rx="9" ry="16" fill="#edd8f5" transform="rotate(300)" />
-              <circle r="8" fill="#fde8f0" />
-              <circle r="4" fill="#f9b8ce" />
-            </g>
-          </svg>
-          <div class="flower-msg">the way you care it's rare 🌷</div>
-        </div>
-
-        <div class="flower" id="f5"
-          style="left:305px;top:198px;animation:bobFlower 2.9s ease-in-out infinite;animation-delay:0.6s;"
-          onclick="bloomFlower(5)">
-          <svg width="52" height="52" viewBox="0 0 60 60">
-            <g transform="translate(30,30)">
-              <ellipse rx="10" ry="18" fill="#fde8f0" transform="rotate(0)" />
-              <ellipse rx="10" ry="18" fill="#e8f4d8" transform="rotate(72)" />
-              <ellipse rx="10" ry="18" fill="#fde8f0" transform="rotate(144)" />
-              <ellipse rx="10" ry="18" fill="#e8f4d8" transform="rotate(216)" />
-              <ellipse rx="10" ry="18" fill="#fde8f0" transform="rotate(288)" />
-              <circle r="8" fill="#fffce8" />
-              <circle r="4" fill="#f5e89a" />
-            </g>
-          </svg>
-          <div class="flower-msg">you make people feel safe 🌼</div>
-        </div>
-
-        <div class="flower" id="f6"
-          style="left:228px;top:220px;animation:bobFlower 3.4s ease-in-out infinite;animation-delay:1.6s;"
-          onclick="bloomFlower(6)">
-          <svg width="50" height="50" viewBox="0 0 60 60">
-            <g transform="translate(30,30)">
-              <ellipse rx="9" ry="15" fill="#d8eef8" transform="rotate(0)" />
-              <ellipse rx="9" ry="15" fill="#c8e4f5" transform="rotate(60)" />
-              <ellipse rx="9" ry="15" fill="#d8eef8" transform="rotate(120)" />
-              <ellipse rx="9" ry="15" fill="#c8e4f5" transform="rotate(180)" />
-              <ellipse rx="9" ry="15" fill="#d8eef8" transform="rotate(240)" />
-              <ellipse rx="9" ry="15" fill="#c8e4f5" transform="rotate(300)" />
-              <circle r="8" fill="#fdf8f2" />
-              <circle r="4" fill="#f9cfe4" />
-            </g>
-          </svg>
-          <div class="flower-msg">happy birthday, Palkuuuu 💖</div>
-        </div>
-
-      </div>
-      <p style="margin-top:20px;font-family:'Caveat',cursive;font-size:16px;color:var(--text-light);">each flower holds
-        a little something :)</p>
-    </section>
-
-    <!-- MUSIC -->
-    <section id="music">
-      <h2 class="music-title reveal">a playlist, for you</h2>
-      <p class="music-sub reveal" style="transition-delay:0.1s;">this made me think of you 🎧</p>
-
-      <div class="music-cards reveal" style="transition-delay:0.2s;">
-
-        <div class="playlist-card reveal" style="transition-delay:0.2s;">
-
-          <iframe src="https://open.spotify.com/embed/playlist/2glFe4MiDK7CKcVkuTYNvL" width="100%" height="380"
-            frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture">
-          </iframe>
-
-        </div>
-
-        <p class="music-upload-hint reveal" style="transition-delay:0.3s;">
-          i picked these slowly :)
-        </p>
-    </section>
-
-    <!-- FINAL -->
-    <section id="final">
-      <div class="final-lines" id="final-lines">
-        <div class="final-line" id="fl1">i don't really know what to call this…</div>
-        <div class="final-line italic" id="fl2">but you make ordinary days feel like something.</div>
-        <div class="final-line" id="fl3">and i'm really glad you exist, Palkuuuu.</div>
-        <div class="final-line italic" style="font-size:clamp(32px,5vw,52px);" id="fl4">happy birthday 🎂💖</div>
-      </div>
-      <div class="final-heart" id="final-heart">🌸</div>
-      <div id="confetti-container"></div>
-    </section>
-
-  </div><!-- /main-site -->
-
-  <script>
-    // ── PASSCODE ──
-    const CORRECT = '2904';
-    let entered = '';
-
-    function pinInput(d) {
-      if (entered.length >= 4) return;
-      entered += d;
-      updateBoxes();
-      if (entered.length === 4) checkPin();
-    }
-
-    function pinDelete() {
-      entered = entered.slice(0, -1);
-      updateBoxes();
-      document.getElementById('lock-wrong').classList.remove('show');
-    }
-
-    function updateBoxes() {
-      for (let i = 0; i < 4; i++) {
-        const b = document.getElementById('b' + i);
-        b.textContent = entered[i] ? '●' : '';
-        b.classList.toggle('filled', !!entered[i]);
-        b.classList.remove('error', 'success');
-      }
-    }
-
-    function checkPin() {
-      if (entered === CORRECT) {
-        for (let i = 0; i < 4; i++) {
-          document.getElementById('b' + i).classList.add('success');
-        }
-        setTimeout(unlock, 600);
-      } else {
-        for (let i = 0; i < 4; i++) {
-          document.getElementById('b' + i).classList.add('error');
-        }
-        document.getElementById('lock-wrong').classList.add('show');
-        setTimeout(() => { entered = ''; updateBoxes(); }, 700);
-      }
-    }
-
-    function unlock() {
-      document.getElementById('lock-screen').classList.add('unlocking');
-      setTimeout(() => {
-        document.getElementById('lock-screen').style.display = 'none';
-        const ms = document.getElementById('main-site');
-        ms.classList.add('visible');
-        initParticles();
-        initFloatingHearts();
-        initScrollReveal();
-        initFinalObserver();
-      }, 800);
-    }
-
-    // ── PARTICLES ──
-    function initParticles() {
-      const container = document.getElementById('particles');
-      const colors = ['#fde8f0', '#f9cfe4', '#ede8fc', '#fce4d6', '#f5e6f8', '#d8eef8'];
-      for (let i = 0; i < 18; i++) {
-        const p = document.createElement('div');
-        p.className = 'particle';
-        const size = Math.random() * 8 + 4;
-        p.style.cssText = `
-      width:${size}px;height:${size}px;
-      background:${colors[Math.floor(Math.random() * colors.length)]};
-      left:${Math.random() * 100}%;
-      bottom:${Math.random() * 20}%;
-      animation-duration:${8 + Math.random() * 12}s;
-      animation-delay:${Math.random() * 8}s;
+<script>
+  // ── PETALS ──
+  const petalLayer = document.getElementById('petals');
+  const symbols = ['✿','❀','✦','·','˚','♡','⁺'];
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('div');
+    p.className = 'fp';
+    const dur  = 14 + Math.random() * 18;
+    const delay = Math.random() * 20;
+    p.style.cssText = `
+      left: ${Math.random() * 100}%;
+      bottom: ${-5 + Math.random() * 20}%;
+      font-size: ${12 + Math.random() * 14}px;
+      animation-duration: ${dur}s;
+      animation-delay: ${delay}s;
+      color: #e8a0bc;
     `;
-        container.appendChild(p);
-      }
+    p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    petalLayer.appendChild(p);
+  }
+
+  // ── CLOCK ──
+  const days   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June',
+                  'July','August','September','October','November','December'];
+
+  const greetings = {
+    night:     'burning midnight oil? 🌙',
+    morning:   'good morning :)',
+    afternoon: 'good afternoon 🌤',
+    evening:   'good evening 🌷',
+  };
+
+  const notes = {
+    night:     'rest when you can 🌙',
+    morning:   'take it slow today 🌸',
+    afternoon: 'hope today\'s been kind 🌼',
+    evening:   'you did well today 🌷',
+  };
+
+  const seasons = {
+    spring: { emoji: '🌸', text: 'spring' },
+    summer: { emoji: '☀️', text: 'summer' },
+    autumn: { emoji: '🍂', text: 'autumn' },
+    winter: { emoji: '❄️', text: 'winter' },
+  };
+
+  function getSeason(m) {
+    if (m >= 2 && m <= 4) return 'spring';
+    if (m >= 5 && m <= 7) return 'summer';
+    if (m >= 8 && m <= 10) return 'autumn';
+    return 'winter';
+  }
+
+  function getTimeOfDay(h) {
+    if (h >= 0  && h < 6)  return 'night';
+    if (h >= 6  && h < 12) return 'morning';
+    if (h >= 12 && h < 17) return 'afternoon';
+    return 'evening';
+  }
+
+  let lastTod = null;
+
+  function tick() {
+    const now = new Date();
+    let h = now.getHours();
+    const m = now.getMinutes();
+    const s = now.getSeconds();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const h12 = h % 12 || 12;
+
+    document.getElementById('hh').textContent   = String(h12).padStart(2, '0');
+    document.getElementById('mm').textContent   = String(m).padStart(2, '0');
+    document.getElementById('ss').textContent   = String(s).padStart(2, '0');
+    document.getElementById('ampm').textContent = ampm;
+
+    // date
+    document.getElementById('dayname').textContent  = days[now.getDay()];
+    document.getElementById('fulldate').textContent =
+      months[now.getMonth()] + ' · ' +
+      String(now.getDate()).padStart(2,'0') + ' · ' +
+      now.getFullYear();
+
+    // time of day
+    const tod = getTimeOfDay(h);
+    if (tod !== lastTod) {
+      lastTod = tod;
+      document.getElementById('greeting').textContent    = greetings[tod];
+      document.getElementById('bottom-note').textContent = notes[tod];
     }
 
-    // ── FLOATING HEARTS ──
-    function initFloatingHearts() {
-      const container = document.getElementById('floating-hearts');
-      const symbols = ['♡', '✦', '·', '✿', '˚'];
-      for (let i = 0; i < 20; i++) {
-        const h = document.createElement('div');
-        h.className = 'fheart';
-        h.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-        h.style.cssText = `
-      left:${Math.random() * 100}%;
-      top:${80 + Math.random() * 20}%;
-      animation-duration:${10 + Math.random() * 15}s;
-      animation-delay:${Math.random() * 10}s;
-      font-size:${12 + Math.random() * 16}px;
-      color:var(--rose);
-    `;
-        container.appendChild(h);
-      }
-    }
+    // season
+    const season = getSeason(now.getMonth());
+    document.getElementById('season-emoji').textContent = seasons[season].emoji;
+    document.getElementById('season-text').textContent  = seasons[season].text;
+  }
 
-    // ── SCROLL REVEAL ──
-    function initScrollReveal() {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) e.target.classList.add('in-view');
-        });
-      }, { threshold: 0.15 });
-      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-    }
-
-    // ── FINAL SECTION ──
-    function initFinalObserver() {
-      const finalSection = document.getElementById('final');
-      let triggered = false;
-      const obs = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && !triggered) {
-          triggered = true;
-          triggerFinal();
-        }
-      }, { threshold: 0.4 });
-      obs.observe(finalSection);
-    }
-
-    function triggerFinal() {
-      const lines = ['fl1', 'fl2', 'fl3', 'fl4'];
-      lines.forEach((id, i) => {
-        setTimeout(() => {
-          document.getElementById(id).classList.add('visible');
-        }, i * 2000);
-      });
-      setTimeout(() => {
-        document.getElementById('final-heart').classList.add('visible');
-        launchConfetti();
-      }, lines.length * 2000 + 300);
-    }
-
-    function launchConfetti() {
-      const colors = ['#fde8f0', '#f9cfe4', '#ede8fc', '#fce4d6', '#f5e6f8', '#e8a0bc', '#a37bc4'];
-      const container = document.getElementById('confetti-container');
-      for (let i = 0; i < 30; i++) {
-        const c = document.createElement('div');
-        c.className = 'confetti-piece';
-        const size = Math.random() * 8 + 4;
-        c.style.cssText = `
-      width:${size}px;height:${size}px;
-      background:${colors[Math.floor(Math.random() * colors.length)]};
-      left:${Math.random() * 100}%;
-      top:${30 + Math.random() * 40}%;
-      animation-duration:${1 + Math.random() * 1.5}s;
-      animation-delay:${Math.random() * 0.5}s;
-      border-radius:${Math.random() > 0.5 ? '50%' : '3px'};
-    `;
-        container.appendChild(c);
-        setTimeout(() => c.remove(), 2500);
-      }
-    }
-
-    // ── SCROLL NAV ──
-    function scrollToSection(id) {
-      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-    }
-
-    const sections = ['hero', 'birthday', 'scrapbook', 'bouquet', 'music', 'final'];
-    window.addEventListener('scroll', () => {
-      const dots = document.querySelectorAll('.nav-dot');
-      let current = 0;
-      sections.forEach((id, i) => {
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top <= window.innerHeight / 2) current = i;
-      });
-      dots.forEach((d, i) => d.classList.toggle('active', i === current));
-    });
-
-    // ── PHOTO UPLOAD ──
-    function triggerUpload(n) {
-      event.stopPropagation();
-      document.getElementById('fi' + n).click();
-    }
-
-    function loadPhoto(n, input) {
-      const file = input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const pp = document.getElementById('pp' + n);
-        pp.innerHTML = `<img src="${e.target.result}" alt="photo ${n}" class="loaded" style="display:block;width:100%;height:100%;object-fit:cover;">`;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // ── FLOWER BLOOM ──
-    function bloomFlower(n) {
-      const flower = document.getElementById('f' + n);
-      const wasOpen = flower.classList.contains('bloomed');
-      document.querySelectorAll('.flower').forEach(f => f.classList.remove('bloomed'));
-      if (!wasOpen) flower.classList.add('bloomed');
-    }
-
-    // ── MUSIC ──
-    let currentTrack = null;
-
-    function playTrack(n) {
-      const audio = document.getElementById('audio' + n);
-      const card = document.getElementById('mc' + n);
-      const btn = document.getElementById('pb' + n);
-
-      if (!audio.src || audio.src === window.location.href) {
-        // No audio loaded — just visual feedback
-        if (currentTrack === n) {
-          card.classList.remove('playing');
-          btn.textContent = '▶';
-          currentTrack = null;
-        } else {
-          document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing'));
-          document.querySelectorAll('.music-play-btn').forEach(b => b.textContent = '▶');
-          card.classList.add('playing');
-          btn.textContent = '♪';
-          currentTrack = n;
-        }
-        return;
-      }
-
-      if (currentTrack && currentTrack !== n) {
-        const prev = document.getElementById('audio' + currentTrack);
-        prev.pause(); prev.currentTime = 0;
-        document.getElementById('mc' + currentTrack).classList.remove('playing');
-        document.getElementById('pb' + currentTrack).textContent = '▶';
-      }
-
-      if (audio.paused) {
-        audio.play();
-        card.classList.add('playing');
-        btn.textContent = '❚❚';
-        currentTrack = n;
-      } else {
-        audio.pause();
-        card.classList.remove('playing');
-        btn.textContent = '▶';
-        currentTrack = null;
-      }
-    }
-  </script>
+  tick();
+  setInterval(tick, 1000);
+</script>
 </body>
-
 </html>
